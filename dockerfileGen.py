@@ -38,42 +38,54 @@ window = tk.Tk()
 window.title("Create Dockerfile")
 
 # create the input fields
-base_image_label = tk.Label(text="Base image:")
+base_image_label = tk.Label(text="Base Image:")
 base_image_variable = tk.StringVar(window)
 base_image_dropdown = tk.OptionMenu(window, base_image_variable, "alpine", "ubuntu", "debian", "custom")
+base_image_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
+base_image_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 base_image_entry = tk.Entry(state="disabled")
 base_image_variable.trace("w", lambda *args: base_image_entry.config(state="normal" if base_image_variable.get() == "custom" else "disabled"))
 cmd_label = tk.Label(text="CMD:")
 cmd_variable = tk.StringVar(window)
 cmd_dropdown = tk.OptionMenu(window, cmd_variable, "bash", "sh", "custom")
+cmd_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
+cmd_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 cmd_entry = tk.Entry(state="disabled")
 cmd_variable.trace("w", lambda *args: cmd_entry.config(state="normal" if cmd_variable.get() == "custom" else "disabled"))
-port_label = tk.Label(text="Exposed port:")
+port_label = tk.Label(text="Exposed Port:")
 port_variable = tk.StringVar(window)
 port_dropdown = tk.OptionMenu(window, port_variable, "80", "443", "8080", "custom")
+port_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
+port_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 port_entry = tk.Entry(state="disabled")
 port_variable.trace("w", lambda *args: port_entry.config(state="normal" if port_variable.get() == "custom" else "disabled"))
 volume_label = tk.Label(text="Volume:")
 volume_variable = tk.StringVar(window)
 volume_dropdown = tk.OptionMenu(window, volume_variable, "/var/www/html", "/var/log", "/app/data", "custom")
+volume_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
+volume_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 volume_entry = tk.Entry(state="disabled")
 volume_variable.trace("w", lambda *args: volume_entry.config(state="normal" if volume_variable.get() == "custom" else "disabled"))
-env_var_label = tk.Label(text="Environment variable:")
+env_var_label = tk.Label(text="Environment Variable:")
 env_var_variable = tk.StringVar(window)
 env_var_dropdown = tk.OptionMenu(window, env_var_variable, "FOO=bar", "BAR=foo", "custom")
+env_var_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
+env_var_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 env_var_entry = tk.Entry(state="disabled")
 env_var_variable.trace("w", lambda *args: env_var_entry.config(state="normal" if env_var_variable.get() == "custom" else "disabled"))
-workdir_label = tk.Label(text="Working directory:")
+workdir_label = tk.Label(text="Working Directory:")
 workdir_variable = tk.StringVar(window)
-workdir_dropdown = tk.OptionMenu(window, workdir_variable, "/app", "/desktop", "/usr/local/bin", "custom")
+workdir_dropdown = tk.OptionMenu(window, workdir_variable, "/app", "/tmp", "/desktop", "/var/www/html", "custom")
+workdir_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
+workdir_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 workdir_entry = tk.Entry(state="disabled")
 workdir_variable.trace("w", lambda *args: workdir_entry.config(state="normal" if workdir_variable.get() == "custom" else "disabled"))
 
+# create the create button
+create_button = tk.Button(text="Create Dockerfile", command=create_dockerfile, font=("Arial", 14), bg="#333", fg="#fff", padx=10, pady=5)
 
-# create the "Create Dockerfile" button
-create_button = tk.Button(text="Create Dockerfile", command=create_dockerfile)
 
-# trying to use a grid based layout to organize the input fields and dropdown menus
+# add the input fields to the window
 base_image_label.grid(row=0, column=0)
 base_image_dropdown.grid(row=0, column=1)
 base_image_entry.grid(row=0, column=2)
@@ -92,8 +104,11 @@ env_var_entry.grid(row=4, column=2)
 workdir_label.grid(row=5, column=0)
 workdir_dropdown.grid(row=5, column=1)
 workdir_entry.grid(row=5, column=2)
-create_button.grid(row=6, column=1)
+create_button.grid(row=6, column=0, columnspan=3)
 
-# start the GUI event loop
+# run the GUI
 window.mainloop()
+
+
+
 
