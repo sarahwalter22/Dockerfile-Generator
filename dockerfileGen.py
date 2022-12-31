@@ -11,9 +11,16 @@ def create_dockerfile():
     base_image = base_image_variable.get()
     if base_image == "custom":
         base_image = base_image_entry.get()
+    cmd_type = cmd_type_variable.get()
     cmd = cmd_variable.get()
     if cmd == "custom":
         cmd = cmd_entry.get()
+    cmd2 = cmd2_variable.get()
+    if cmd2 == "custom":
+        cmd2 = cmd2_entry.get()
+    cmd3 = cmd3_variable.get()
+    if cmd3 == "custom":
+        cmd3 = cmd3_entry.get()
     port = port_variable.get()
     if port == "custom":
         port = port_entry.get()
@@ -29,9 +36,20 @@ def create_dockerfile():
 
     # create the Dockerfile
     dockerfile = f"FROM {base_image}\n"
-    dockerfile += f"CMD {cmd}\n"
+    cmd_list = []
+    if cmd:  # if cmd is not empty or None
+        cmd_list.append(cmd)
+    if cmd2:  # if cmd2 is not empty or None
+        cmd_list.append(cmd2)
+    if cmd3:  # if cmd3 is not empty or None
+        cmd_list.append(cmd3)
+    # condition the formatting on the user's CMD type selection
+    if cmd_type == "SHELL":
+        dockerfile += f"CMD {' '.join(cmd_list)}\n"
+    else:
+        dockerfile += f'CMD ["' + '","'.join(cmd_list) + '"]\n'
     dockerfile += f"EXPOSE {port}\n"
-    dockerfile += f"VOLUME {volume}\n"
+    dockerfile += f'VOLUME ["{volume}"]\n'
     dockerfile += f"ENV {env_var}\n"
     dockerfile += f"WORKDIR {workdir}\n"
 
@@ -41,10 +59,11 @@ def create_dockerfile():
 
 # create the GUI window
 window = tk.Tk()
-window.title("Create Dockerfile")
+window.title("Sarah's Dockerfile Wizard")
+window.geometry("1024x768+100+100")  # set the dimensions of the window
 
 # create the input fields
-# base image 
+# base image
 base_image_label = tk.Label(text="Base Image:")
 base_image_variable = tk.StringVar(window)
 base_image_dropdown = tk.OptionMenu(window, base_image_variable, "alpine", "ubuntu", "debian", "custom")
@@ -53,9 +72,16 @@ base_image_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 base_image_entry = tk.Entry(state="disabled")
 base_image_variable.trace("w", lambda *args: base_image_entry.config(state="normal" if base_image_variable.get() == "custom" else "disabled"))
 
+# CMD type
+cmd_type_label = tk.Label(text="CMD Type:")
+cmd_type_variable = tk.StringVar(window)
+cmd_type_dropdown = tk.OptionMenu(window, cmd_type_variable, "SHELL", "exec")
+cmd_type_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
+cmd_type_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
+cmd_type_variable.trace("w", lambda *args: update_cmd_defaults())
 
 # CMD
-cmd_label = tk.Label(text="CMD:")
+cmd_label = tk.Label(text="CMD 1:")
 cmd_variable = tk.StringVar(window)
 cmd_dropdown = tk.OptionMenu(window, cmd_variable, "bash", "sh", "custom")
 cmd_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
@@ -63,8 +89,26 @@ cmd_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 cmd_entry = tk.Entry(state="disabled")
 cmd_variable.trace("w", lambda *args: cmd_entry.config(state="normal" if cmd_variable.get() == "custom" else "disabled"))
 
-# exposed port
-port_label = tk.Label(text="Exposed Port:")
+# CMD 2
+cmd2_label = tk.Label(text="CMD 2:")
+cmd2_variable = tk.StringVar(window)
+cmd2_dropdown = tk.OptionMenu(window, cmd2_variable, "bash", "sh", "custom")
+cmd2_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
+cmd2_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
+cmd2_entry = tk.Entry(state="disabled")
+cmd2_variable.trace("w", lambda *args: cmd2_entry.config(state="normal" if cmd2_variable.get() == "custom" else "disabled"))
+
+# CMD 3
+cmd3_label = tk.Label(text="CMD 3:")
+cmd3_variable = tk.StringVar(window)
+cmd3_dropdown = tk.OptionMenu(window, cmd3_variable, "bash", "sh", "custom")
+cmd3_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
+cmd3_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
+cmd3_entry = tk.Entry(state="disabled")
+cmd3_variable.trace("w", lambda *args: cmd3_entry.config(state="normal" if cmd3_variable.get() == "custom" else "disabled"))
+
+# port
+port_label = tk.Label(text="Port:")
 port_variable = tk.StringVar(window)
 port_dropdown = tk.OptionMenu(window, port_variable, "80", "443", "8080", "custom")
 port_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
@@ -72,61 +116,66 @@ port_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 port_entry = tk.Entry(state="disabled")
 port_variable.trace("w", lambda *args: port_entry.config(state="normal" if port_variable.get() == "custom" else "disabled"))
 
-# select volume - sets some image metadata to say a directory inside the image is a volume
+# select volume - set s some image metadata to say a directory inside the image is a volume
 volume_label = tk.Label(text="Volume:")
 volume_variable = tk.StringVar(window)
-volume_dropdown = tk.OptionMenu(window, volume_variable, "/var/lib/docker/volumes/", "/var/log", "/app/data", "custom")
+volume_dropdown = tk.OptionMenu(window, volume_variable, "/app/data", "/var/lib/docker/volumes/", "/app/logs", "custom")
 volume_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
 volume_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 volume_entry = tk.Entry(state="disabled")
 volume_variable.trace("w", lambda *args: volume_entry.config(state="normal" if volume_variable.get() == "custom" else "disabled"))
 
-# set environmental vairable 
+# env var
 env_var_label = tk.Label(text="Environment Variable:")
 env_var_variable = tk.StringVar(window)
-env_var_dropdown = tk.OptionMenu(window, env_var_variable, "FOO=bar", "BAR=foo", "custom")
+env_var_dropdown = tk.OptionMenu(window, env_var_variable, "NODE_ENV=production", "APP_DEBUG=true", "custom")
 env_var_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
 env_var_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 env_var_entry = tk.Entry(state="disabled")
 env_var_variable.trace("w", lambda *args: env_var_entry.config(state="normal" if env_var_variable.get() == "custom" else "disabled"))
 
-# choose a working directory
+# workdir
 workdir_label = tk.Label(text="Working Directory:")
 workdir_variable = tk.StringVar(window)
-workdir_dropdown = tk.OptionMenu(window, workdir_variable, "/app", "/tmp", "/desktop", "/var/www/html", "custom")
+workdir_dropdown = tk.OptionMenu(window, workdir_variable, "/desktop", "/app/src", "/app/bin", "custom")
 workdir_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
 workdir_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 workdir_entry = tk.Entry(state="disabled")
 workdir_variable.trace("w", lambda *args: workdir_entry.config(state="normal" if workdir_variable.get() == "custom" else "disabled"))
 
-# create the create button
-create_button = tk.Button(text="Create Dockerfile", command=create_dockerfile, font=("Arial", 14), bg="#333", fg="#fff", padx=10, pady=5)
+# create Dockerfile button
+create_button = tk.Button(text="Create Dockerfile", command=create_dockerfile)
+create_button.config(bg="#333", fg="#fff", font=("Arial", 14), padx=20, pady=10)
 
+# layout the input field s and button
+base_image_label.pack()
+base_image_dropdown.pack()
+base_image_entry.pack()
+cmd_type_label.pack()
+cmd_type_dropdown.pack()
+cmd_label.pack()
+cmd_dropdown.pack()
+cmd_entry.pack()
+cmd2_label.pack()
+cmd2_dropdown.pack()
+cmd2_entry.pack()
+cmd3_label.pack()
+cmd3_dropdown.pack()
+cmd3_entry.pack()
+port_label.pack()
+port_dropdown.pack()
+port_entry.pack()
+volume_label.pack()
+volume_dropdown.pack()
+volume_entry.pack()
+env_var_label.pack()
+env_var_dropdown.pack()
+env_var_entry.pack()
+workdir_label.pack()
+workdir_dropdown.pack()
+workdir_entry.pack()
+create_button.pack()
 
-# add the input fields to the window
-base_image_label.grid(row=0, column=0)
-base_image_dropdown.grid(row=0, column=1)
-base_image_entry.grid(row=0, column=2)
-cmd_label.grid(row=1, column=0)
-cmd_dropdown.grid(row=1, column=1)
-cmd_entry.grid(row=1, column=2)
-port_label.grid(row=2, column=0)
-port_dropdown.grid(row=2, column=1)
-port_entry.grid(row=2, column=2)
-volume_label.grid(row=3, column=0)
-volume_dropdown.grid(row=3, column=1)
-volume_entry.grid(row=3, column=2)
-env_var_label.grid(row=4, column=0)
-env_var_dropdown.grid(row=4, column=1)
-env_var_entry.grid(row=4, column=2)
-workdir_label.grid(row=5, column=0)
-workdir_dropdown.grid(row=5, column=1)
-workdir_entry.grid(row=5, column=2)
-create_button.grid(row=6, column=0, columnspan=3)
-
-# run the GUI
 window.mainloop()
-
-
 
 
