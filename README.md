@@ -3,6 +3,8 @@ A Dockerfile is a simple text file that contains a set of commands and instructi
 
 This program generates a simple GUI that captures user input, uses it to write a simple Dockerfile, and saves the Dockerfile to a user-specified directory. The idea is to create a simple foundation following best practices that can be built upon and expanded. 
 
+The generator allows you to input optional information such as a base image, CMD, exposed port, volume, and environment variables. Both predefined and custom input options are supported. This version also supports both SHELL and exec CMD forms. Additionally, you can specify a custom directory to export your dockerfile.
+
 This is a personal project I'm building for fun and learning, use at your own risk. :) This is a "minimum viable product" version.
 To run: make sure you have Python installed. Then access the directory where the program file is saved and run python dockerfileGen.py
 
