@@ -38,6 +38,7 @@ window = tk.Tk()
 window.title("Create Dockerfile")
 
 # create the input fields
+# base image 
 base_image_label = tk.Label(text="Base Image:")
 base_image_variable = tk.StringVar(window)
 base_image_dropdown = tk.OptionMenu(window, base_image_variable, "alpine", "ubuntu", "debian", "custom")
@@ -45,6 +46,9 @@ base_image_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
 base_image_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 base_image_entry = tk.Entry(state="disabled")
 base_image_variable.trace("w", lambda *args: base_image_entry.config(state="normal" if base_image_variable.get() == "custom" else "disabled"))
+
+
+# CMD
 cmd_label = tk.Label(text="CMD:")
 cmd_variable = tk.StringVar(window)
 cmd_dropdown = tk.OptionMenu(window, cmd_variable, "bash", "sh", "custom")
@@ -52,6 +56,8 @@ cmd_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
 cmd_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 cmd_entry = tk.Entry(state="disabled")
 cmd_variable.trace("w", lambda *args: cmd_entry.config(state="normal" if cmd_variable.get() == "custom" else "disabled"))
+
+# exposed port
 port_label = tk.Label(text="Exposed Port:")
 port_variable = tk.StringVar(window)
 port_dropdown = tk.OptionMenu(window, port_variable, "80", "443", "8080", "custom")
@@ -59,13 +65,17 @@ port_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
 port_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 port_entry = tk.Entry(state="disabled")
 port_variable.trace("w", lambda *args: port_entry.config(state="normal" if port_variable.get() == "custom" else "disabled"))
+
+# select volume - sets some image metadata to say a directory inside the image is a volume
 volume_label = tk.Label(text="Volume:")
 volume_variable = tk.StringVar(window)
-volume_dropdown = tk.OptionMenu(window, volume_variable, "/var/www/html", "/var/log", "/app/data", "custom")
+volume_dropdown = tk.OptionMenu(window, volume_variable, "/var/lib/docker/volumes/", "/var/log", "/app/data", "custom")
 volume_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
 volume_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 volume_entry = tk.Entry(state="disabled")
 volume_variable.trace("w", lambda *args: volume_entry.config(state="normal" if volume_variable.get() == "custom" else "disabled"))
+
+# set environmental vairable 
 env_var_label = tk.Label(text="Environment Variable:")
 env_var_variable = tk.StringVar(window)
 env_var_dropdown = tk.OptionMenu(window, env_var_variable, "FOO=bar", "BAR=foo", "custom")
@@ -73,6 +83,8 @@ env_var_dropdown.config(bg="#fff", fg="#333", padx=10, pady=5)
 env_var_dropdown["menu"].config(font=("Arial", 14), bg="#fff", fg="#333")
 env_var_entry = tk.Entry(state="disabled")
 env_var_variable.trace("w", lambda *args: env_var_entry.config(state="normal" if env_var_variable.get() == "custom" else "disabled"))
+
+# choose a working directory
 workdir_label = tk.Label(text="Working Directory:")
 workdir_variable = tk.StringVar(window)
 workdir_dropdown = tk.OptionMenu(window, workdir_variable, "/app", "/tmp", "/desktop", "/var/www/html", "custom")
