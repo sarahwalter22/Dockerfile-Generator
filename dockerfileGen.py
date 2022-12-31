@@ -1,3 +1,9 @@
+# generates a very simple GUI that accepts user input to create a basic dockerfile.
+# user input includes both predefined and user generated options
+# see the readme for more details
+# I built this for fun and it's probably buggy, use at your own risk
+# copyright sarah walter
+
 import tkinter as tk
 
 def create_dockerfile():
